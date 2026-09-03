@@ -1,55 +1,46 @@
-# Gemini Multi-Turn Chat Agent
+# ai-agent-sandbox
 
-`ai-agent-sandbox` is a small Python command-line application that lets a user
-have an ongoing conversation with Google's Gemini model.
+A Python command-line application that runs a persistent, multi-turn conversation with Google's Gemini model using the Google GenAI SDK.
 
 ## What it does
 
-- Reads the Gemini API key from the `ColabVSCODE` environment variable.
-- Starts a chat session with `gemini-3.6-flash`.
-- Sends each user message to Gemini while keeping the earlier messages in the
-  same conversation.
-- Stops when the user enters `exit`, `quit`, or presses `Ctrl+C`.
-- Reports a missing API key or API failure instead of starting silently.
+- Reads a Gemini API key from the `ColabVSCODE` environment variable
+- Initialises a multi-turn chat session with `gemini-3.6-flash` so the model remembers everything said earlier in the same run
+- Loops on user input: sends each message to Gemini and prints the response
+- Exits cleanly on `exit`, `quit`, or `Ctrl+C`
+- Reports a missing API key or an API failure with a clear error message instead of crashing silently
 
-## How to run it
+## How it was built
 
-1. Install Python 3.9 or newer.
-2. Install the dependencies:
+- Single-file Python script (`main.py`) using the `google-genai` SDK
+- Used `client.chats.create(model=...)` to create a stateful chat object that accumulates conversation history automatically
+- Wrapped the input loop in `try/except` to catch both `KeyboardInterrupt` and API errors separately, giving different exit messages for each
+- Used `os.getenv` rather than hardcoding credentials; the key never touches the repository
 
-   ```bash
-   pip install -r requirements.txt
-   ```
+## Setup
 
-3. Set the API key without putting it in the repository:
+```bash
+git clone https://github.com/danhthevodanh/ai-agent-sandbox.git
+cd ai-agent-sandbox
 
-   ```bash
-   export ColabVSCODE="your-gemini-api-key"
-   ```
+pip install -r requirements.txt
 
-4. Start the agent:
-
-   ```bash
-   python main.py
-   ```
+export ColabVSCODE="your-gemini-api-key"
+python main.py
+```
 
 ## Project structure
 
 | File | Purpose |
-| --- | --- |
-| `main.py` | Starts the Gemini client, opens the chat, and handles the input loop. |
-| `requirements.txt` | Lists the Google GenAI and environment-variable packages. |
-| `.gitignore` | Keeps keys, virtual environments, and generated Python files out of Git. |
+|------|---------|
+| `main.py` | Gemini client setup, chat session init, input/response loop |
+| `requirements.txt` | `google-genai` and `python-dotenv` |
+| `.gitignore` | Excludes `.env`, `__pycache__`, virtual environments |
 
-## Resume description
+## Tech stack
 
-Built a Python command-line Gemini chat agent using the Google GenAI SDK. Added
-environment-variable API-key handling, persistent multi-turn conversation
-context, clean exit commands, keyboard-interrupt handling, and visible API
-error messages.
+Python 3.9+, Google GenAI SDK (`google-genai`)
 
-## Recent work
+## License
 
-- Created the initial Python agent structure.
-- Switched the model configuration to `gemini-3.6-flash`.
-- Replaced one-off text generation with a multi-turn interactive chat session.
+MIT
